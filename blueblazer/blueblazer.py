@@ -12,7 +12,9 @@ It should be in the following format:
 
 '''
 
+from collections import defaultdict
 import os
+import random
 import yaml
 import xdg.BaseDirectory
 
@@ -111,7 +113,6 @@ def random_ratio(rounding=1, starting_seed=None):
     >>> random_ratio(rounding=4, starting_seed=121412)
     [0.6698, 0.2037, 0.1265]
     '''
-    import random
 
     if starting_seed:
         random.seed(starting_seed)
@@ -125,3 +126,82 @@ def random_ratio(rounding=1, starting_seed=None):
             continue
         total = sum((first, second, third))
     return sorted((first, second, third), reverse=True)
+
+# Some set amounts.
+COCKTAIL = 70
+HIGHBALL = 150
+OLD_FASHIONED = 40
+
+def random_drink(amount=COCKTAIL, ingredients=None, seed=None):
+    '''Generate a random drink of a given amount.
+
+    Presuming the ingredients listing looks something like this:
+    >>> ingredients = [{'name': 'Rum', 'abv': 0.4},
+    ...                {'name': 'Sunny D', 'abv': 0}]
+
+    We'll get a delicious cocktail with 14mL of Sunny D, and 56mL of Rum. Yum yum.
+    >>> random_drink(ingredients=ingredients, seed=12345) # The seed is for testing only.
+    {'Sunny D': 14.0, 'Rum': 56.0}
+    '''
+    ratio = random_ratio(starting_seed=seed)
+
+    if not ingredients:
+        # Ingredients were not passed in, so load from the file.
+        ingredients = read_ingredients()
+
+    if seed:
+        # Passed in a seed, use it for consistent results.
+        random.seed(seed)
+
+    # Fill out our drink's ingredients.
+    drink_ingredients = defaultdict(int)
+    for i in ratio:
+        thisdrink = random.choice(ingredients).get('name', "Water")
+        drink_ingredients[thisdrink] += i*amount
+
+    return dict(drink_ingredients)
+
+def format_recipe(drink, ingredients=None, seed=None):
+    '''Formats a given recipe according to the information in the ingredients.
+    It guesses how to prepare a given drink based on the ingredients involved.
+
+    For example, straight spirits might be shaken or stirred, depending on the
+    phases of the moon.
+    >>> format_recipe(drink={'Rum': 70}, seed=1234)
+    70mL (2.37oz) Rum.
+    Pour ingredients into shaker with ice.
+    Shake well.
+    Strain into cocktail glass filled with ice.
+
+    Note the seed, which is not normally passed when ran normally.
+    >>> format_recipe(drink={'Rum': 40, 'Cola': 30}, seed=12345)
+    30mL (1.01oz) Cola.
+    40mL (1.35oz) Rum.
+    Pour ingredients into cocktail glass and stir.
+    '''
+    if seed:
+        random.seed(seed)
+
+    for ingrname, amount in drink.iteritems():
+        print "{0}mL ({1:0.2f}oz) {2}.".format(amount, amount/29.5735, ingrname)
+
+    # Fall through and set the appropriate glass type.
+    total_amount = sum(drink.values())
+    glass = "bucket"
+    if total_amount <= 150:
+        glass = "highball"
+    if total_amount <= 70:
+        glass = "cocktail"
+    if total_amount <= 40:
+        glass = "old fashioned"
+
+    # Shaken or stirred?
+    mix_method = random.choice(('stir', 'shake'))
+    if mix_method == 'stir':
+        print "Pour ingredients into {glass} glass{ice} and stir{briskly}.".format(briskly=random.choice(("", " briskly", " gently")), glass=glass, ice=random.choice((" with ice", "")))
+    elif mix_method == 'shake':
+        print "Pour ingredients into shaker{ice}.".format(ice=random.choice(("", " with ice", " with ice", " with ice")))
+        print "Shake {method}.".format(method=random.choice(("well", "briskly", "until painfully cold", "gently")))
+        print "Strain into {glass} glass{ice}.".format(glass=glass, ice=random.choice(("", " filled with ice")))
+
+# TODO: Function to evolve drinks based on given ingredients.
