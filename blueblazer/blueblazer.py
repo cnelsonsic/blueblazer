@@ -232,6 +232,7 @@ def format_recipe(drink, ingredients=None, seed=None):
         print "Strain into {glass} glass{ice}.".format(glass=glass, ice=random.choice(("", " filled with ice")))
 
 # TODO: Function to evolve drinks based on given ingredients.
+# TODO: Add support to the yaml for "shakeable: no" to prevent shaking soda.
 
 if __name__ == "__main__":
     format_recipe(random_drink())
