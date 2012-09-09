@@ -52,6 +52,8 @@ def combine(ingredients):
 
         # Then divide by the amount of liquid.
         final_amount += amount
+        if final_amount < 0:
+            continue
         combined /= final_amount
         final_percentage = round(combined, 3)
     return (final_amount, final_percentage)
@@ -80,8 +82,17 @@ def read_ingredients(filename=None, contents=None):
             with open(filename, 'r') as f:
                 contents = f.read()
         except IOError:
+            os.makedirs(os.path.dirname(filename))
+            with open(filename, "w") as f:
+                sample_ingredients = '\n'.join(("---",
+                    "ingredients:",
+                    "    - name: Vodka",
+                    "    abv: 40%",
+                    "    - name: Water",
+                    "    proof: 0",))
+                f.write(sample_ingredients)
             raise Exception("Could not read your ingredients file. "
-                            "Please create one at {0}".format(filename))
+                            "Created a blank one at {0}".format(filename))
 
     ingredients = yaml.load(contents).get('ingredients', [])
     for ingredient in ingredients:
@@ -169,6 +180,7 @@ def format_recipe(drink, ingredients=None, seed=None):
     phases of the moon.
     >>> format_recipe(drink={'Rum': 70}, seed=1234)
     70mL (2.37oz) Rum.
+    Total of 0mL (0.00oz) @ 0% ABV
     Pour ingredients into shaker with ice.
     Shake well.
     Strain into cocktail glass filled with ice.
@@ -177,13 +189,28 @@ def format_recipe(drink, ingredients=None, seed=None):
     >>> format_recipe(drink={'Rum': 40, 'Cola': 30}, seed=12345)
     30mL (1.01oz) Cola.
     40mL (1.35oz) Rum.
+    Total of 0mL (0.00oz) @ 0% ABV
     Pour ingredients into cocktail glass and stir.
     '''
     if seed:
         random.seed(seed)
 
+    if not ingredients:
+        ingredients = read_ingredients()
+
     for ingrname, amount in drink.iteritems():
         print "{0}mL ({1:0.2f}oz) {2}.".format(amount, amount/29.5735, ingrname)
+
+    # Get the combined amount and abv.
+    amt_abv = []
+    for ingrname, amount in drink.iteritems():
+        for ingr in ingredients:
+            if ingr['name'] == ingrname:
+                abv = ingr['abv']
+                amt_abv.append((amount, abv))
+                break # Found the one, don't need to look further
+    total_amount, total_abv = combine(amt_abv)
+    print "Total of {0}mL ({1:0.2f}oz) @ {2:.0f}% ABV".format(total_amount, total_amount/29.5735, total_abv*100)
 
     # Fall through and set the appropriate glass type.
     total_amount = sum(drink.values())
@@ -205,3 +232,6 @@ def format_recipe(drink, ingredients=None, seed=None):
         print "Strain into {glass} glass{ice}.".format(glass=glass, ice=random.choice(("", " filled with ice")))
 
 # TODO: Function to evolve drinks based on given ingredients.
+
+if __name__ == "__main__":
+    format_recipe(random_drink())
