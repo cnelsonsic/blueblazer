@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Blue Blazer - Random Cocktails for Everyone.</title>
+         <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    </head>
+    <body>
+        <div class="container">
+            <div class="hero-unit">
+                <h1> Your Cocktail: </h1>
+                <p class="lead">
+                {% for line in recipe %}
+                    {{ line }}
+                    <br />
+                {% endfor %}
+                </p>
+            </div>
+        </div>
+
+        <script src="http://code.jquery.com/jquery-latest.js"></script>
+        <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+    </body>
+</html>

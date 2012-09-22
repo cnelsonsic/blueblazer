@@ -9,6 +9,7 @@ setup(name='blueblazer',
       author_email='cnelsonsic@gmail.com',
       url='https://github.com/cnelsonsic/blueblazer',
       packages=find_packages(),
+      scripts=['bin/blueblazer-http',]
       license='LICENSE',
-      install_requires=['PyYAML>=3.10', 'pyxdg>=0.19'],
+      install_requires=['PyYAML>=3.10', 'pyxdg>=0.19', 'flask>=0.9],
      )
