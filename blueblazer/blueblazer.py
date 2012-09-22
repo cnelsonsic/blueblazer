@@ -181,7 +181,7 @@ def format_recipe(drink, ingredients=None, seed=None):
 
     For example, straight spirits might be shaken or stirred, depending on the
     phases of the moon.
-    >>> format_recipe(drink={'Rum': 70}, ingredients=ingredients, seed=1234)
+    >>> print format_recipe(drink={'Rum': 70}, ingredients=ingredients, seed=1234)
     70mL (2.37oz) Rum.
     Total of 70mL (2.37oz) @ 40% ABV
     Pour ingredients into shaker with ice.
@@ -189,7 +189,7 @@ def format_recipe(drink, ingredients=None, seed=None):
     Strain into cocktail glass filled with ice.
 
     Note the seed, which is not normally passed when ran normally.
-    >>> format_recipe(drink={'Rum': 40, 'Cola': 30}, ingredients=ingredients, seed=12345)
+    >>> print format_recipe(drink={'Rum': 40, 'Cola': 30}, ingredients=ingredients, seed=12345)
     30mL (1.01oz) Cola.
     40mL (1.35oz) Rum.
     Total of 70mL (2.37oz) @ 23% ABV
@@ -201,8 +201,9 @@ def format_recipe(drink, ingredients=None, seed=None):
     if not ingredients:
         ingredients = read_ingredients()
 
+    output = []
     for ingrname, amount in drink.iteritems():
-        print "{0}mL ({1:0.2f}oz) {2}.".format(amount, amount/29.5735, ingrname)
+        output.append("{0}mL ({1:0.2f}oz) {2}.".format(amount, amount/29.5735, ingrname))
 
     # Get the combined amount and abv.
     amt_abv = []
@@ -213,7 +214,7 @@ def format_recipe(drink, ingredients=None, seed=None):
                 amt_abv.append((amount, abv))
                 break # Found the one, don't need to look further
     total_amount, total_abv = combine(amt_abv)
-    print "Total of {0}mL ({1:0.2f}oz) @ {2:.0f}% ABV".format(total_amount, total_amount/29.5735, total_abv*100)
+    output.append("Total of {0}mL ({1:0.2f}oz) @ {2:.0f}% ABV".format(total_amount, total_amount/29.5735, total_abv*100))
 
     # Fall through and set the appropriate glass type.
     total_amount = sum(drink.values())
@@ -228,14 +229,15 @@ def format_recipe(drink, ingredients=None, seed=None):
     # Shaken or stirred?
     mix_method = random.choice(('stir', 'shake'))
     if mix_method == 'stir':
-        print "Pour ingredients into {glass} glass{ice} and stir{briskly}.".format(briskly=random.choice(("", " briskly", " gently")), glass=glass, ice=random.choice((" with ice", "")))
+        output.append("Pour ingredients into {glass} glass{ice} and stir{briskly}.".format(briskly=random.choice(("", " briskly", " gently")), glass=glass, ice=random.choice((" with ice", ""))))
     elif mix_method == 'shake':
-        print "Pour ingredients into shaker{ice}.".format(ice=random.choice(("", " with ice", " with ice", " with ice")))
-        print "Shake {method}.".format(method=random.choice(("well", "briskly", "until painfully cold", "gently")))
-        print "Strain into {glass} glass{ice}.".format(glass=glass, ice=random.choice(("", " filled with ice")))
+        output.append("Pour ingredients into shaker{ice}.".format(ice=random.choice(("", " with ice", " with ice", " with ice"))))
+        output.append("Shake {method}.".format(method=random.choice(("well", "briskly", "until painfully cold", "gently"))))
+        output.append("Strain into {glass} glass{ice}.".format(glass=glass, ice=random.choice(("", " filled with ice"))))
+    return '\n'.join(output)
 
 # TODO: Function to evolve drinks based on given ingredients.
 # TODO: Add support to the yaml for "shakeable: no" to prevent shaking soda.
 
 if __name__ == "__main__":
-    format_recipe(random_drink())
+    print format_recipe(random_drink())
