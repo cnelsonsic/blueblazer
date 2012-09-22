@@ -7,7 +7,19 @@ app = Flask(__name__)
 @app.route('/')
 def random_cocktail():
     recipe = format_recipe(random_drink()).split('\n')
-    return render_template('recipe.html', recipe=recipe)
+
+    ingredients = []
+    instructions = []
+    for line in recipe:
+        if "@" in line:
+            total = line
+        elif "mL" in line and "oz" in line:
+            ingredients.append(line)
+        else:
+            instructions.append(line)
+    return render_template('recipe.html', ingredients=ingredients,
+                                          total=total,
+                                          instructions=instructions)
 
 if __name__ == '__main__':
     app.run()

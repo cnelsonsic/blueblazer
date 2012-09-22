@@ -2,18 +2,27 @@
 <html lang="en">
     <head>
         <title>Blue Blazer - Random Cocktails for Everyone.</title>
-         <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <link href="/static/blueblazer.css" rel="stylesheet">
     </head>
     <body>
-        <div class="container">
-            <div class="hero-unit">
-                <h1> Your Cocktail: </h1>
-                <p class="lead">
-                {% for line in recipe %}
-                    {{ line }}
-                    <br />
+        <div class="container row-fluid">
+            <div class="hero-unit span4 offset4">
+                <blockquote>
+                    {% for ingredient in ingredients %}
+                        <h4>{{ ingredient }}</h4>
+                    {% endfor %}
+
+                    <small>{{ total }}<br/></small>
+                </blockquote>
+
+                <ul class="unstyled">
+                {% for line in instructions %}
+                    <li>
+                        {{ line }}
+                    </li>
                 {% endfor %}
-                </p>
+                </ul>
             </div>
         </div>
 
