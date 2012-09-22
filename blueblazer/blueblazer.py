@@ -176,20 +176,23 @@ def format_recipe(drink, ingredients=None, seed=None):
     '''Formats a given recipe according to the information in the ingredients.
     It guesses how to prepare a given drink based on the ingredients involved.
 
+    It can take a list of dicts of ingredients and their ABV percentages.
+    >>> ingredients = [{'name': 'Rum', 'abv':  .4}, {'name': 'Cola', 'abv': 0}]
+
     For example, straight spirits might be shaken or stirred, depending on the
     phases of the moon.
-    >>> format_recipe(drink={'Rum': 70}, seed=1234)
+    >>> format_recipe(drink={'Rum': 70}, ingredients=ingredients, seed=1234)
     70mL (2.37oz) Rum.
-    Total of 0mL (0.00oz) @ 0% ABV
+    Total of 70mL (2.37oz) @ 40% ABV
     Pour ingredients into shaker with ice.
     Shake well.
     Strain into cocktail glass filled with ice.
 
     Note the seed, which is not normally passed when ran normally.
-    >>> format_recipe(drink={'Rum': 40, 'Cola': 30}, seed=12345)
+    >>> format_recipe(drink={'Rum': 40, 'Cola': 30}, ingredients=ingredients, seed=12345)
     30mL (1.01oz) Cola.
     40mL (1.35oz) Rum.
-    Total of 0mL (0.00oz) @ 0% ABV
+    Total of 70mL (2.37oz) @ 23% ABV
     Pour ingredients into cocktail glass and stir.
     '''
     if seed:
