@@ -87,9 +87,9 @@ def read_ingredients(filename=None, contents=None):
                 sample_ingredients = '\n'.join(("---",
                     "ingredients:",
                     "    - name: Vodka",
-                    "    abv: 40%",
+                    "      abv: 40%",
                     "    - name: Water",
-                    "    proof: 0",))
+                    "      proof: 0",))
                 f.write(sample_ingredients)
             raise Exception("Could not read your ingredients file. "
                             "Created a blank one at {0}".format(filename))
