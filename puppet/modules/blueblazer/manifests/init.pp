@@ -31,11 +31,16 @@
 class blueblazer {
   package { [
       'gunicorn',
-      'supervisor',
       'git+git://github.com/cnelsonsic/blueblazer.git',
     ]:
     ensure   => 'latest',
     provider => 'pip',
+  }
+
+  package { [
+    'supervisor',
+  ]:
+    ensure   => 'latest',
   }
 
   service {'supervisord':
