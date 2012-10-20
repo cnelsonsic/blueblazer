@@ -88,7 +88,7 @@ class blueblazer {
     lens    => 'MySQL.lns',
     incl    => '/etc/supervisor/supervisord.conf',
     context => '/files/etc/supervisor/supervisord.conf/target[5]/',
-    changes => 'set files /etc/supervisor/conf.d/*',
+    changes => 'set files /etc/supervisor/conf.d/*.conf',
     notify  => Service['supervisor'],
   }
 }
