@@ -99,7 +99,7 @@ class blueblazer {
     notify  => Service['supervisor'],
   }
 
-  file { '/etc/nginx/conf.d/blueblazer.conf':
+  file { '/etc/nginx/sites-enabled/blueblazer.conf':
     content => template('blueblazer/blueblazer.nginx.conf'),
     require => Package['nginx'],
     notify  => Service['nginx'],
