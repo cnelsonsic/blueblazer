@@ -43,7 +43,7 @@ class blueblazer {
     ensure   => 'latest',
   }
 
-  service {'supervisord':
+  service {'supervisor':
     ensure  => 'running',
     enable  => true,
     require => Package['supervisor'],
@@ -61,7 +61,7 @@ class blueblazer {
     onlyif  => 'test ! -f /var/www/blueblazer/setup.py',
     command => "git clone ${blueblazer_git} .",
     require => File['/var/www'],
-    notify  => Service['supervisord'],
+    notify  => Service['supervisor'],
   }
 
   # If there's a checkout, make sure it's running the latest.
@@ -71,7 +71,7 @@ class blueblazer {
     onlyif  => 'test -f /var/www/blueblazer/setup.py',
     command => 'git fetch origin; git checkout origin/master',
     require => Exec['git clone'],
-    notify  => Service['supervisord'],
+    notify  => Service['supervisor'],
   }
 
   file { ['/etc/supervisor', '/etc/supervisor/conf.d', ]:
@@ -80,15 +80,15 @@ class blueblazer {
   file { '/etc/supervisor/conf.d/blueblazer.conf':
     content => template('blueblazer/blueblazer.conf'),
     require => File['/etc/supervisor/conf.d'],
-    notify  => Service['supervisord'],
+    notify  => Service['supervisor'],
   }
 
   # Set up the includes for supervisord configs.
   augeas {'supervisord.conf':
     lens    => 'MySQL.lns',
-    incl    => '/etc/supervisord.conf',
-    context => '/files/etc/supervisord.conf/target[5]/',
+    incl    => '/etc/supervisor/supervisord.conf',
+    context => '/files/etc/supervisor/supervisord.conf/target[5]/',
     changes => 'set files /etc/supervisor/conf.d/*',
-    notify  => Service['supervisord'],
+    notify  => Service['supervisor'],
   }
 }
