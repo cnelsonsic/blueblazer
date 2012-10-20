@@ -39,6 +39,7 @@ class blueblazer {
 
   package { [
     'supervisor',
+    'nginx',
   ]:
     ensure   => 'latest',
   }
@@ -47,6 +48,12 @@ class blueblazer {
     ensure  => 'running',
     enable  => true,
     require => Package['supervisor'],
+  }
+
+  service {'nginx':
+    ensure  => 'running',
+    enable  => true,
+    require => Package['nginx'],
   }
 
   file {['/var/www', '/var/www/blueblazer']:
@@ -90,5 +97,11 @@ class blueblazer {
     context => '/files/etc/supervisor/supervisord.conf/target[5]/',
     changes => 'set files /etc/supervisor/conf.d/*.conf',
     notify  => Service['supervisor'],
+  }
+
+  file { '/etc/nginx/conf.d/blueblazer.conf':
+    content => template('blueblazer/blueblazer.nginx.conf'),
+    require => Package['nginx'],
+    notify  => Service['nginx'],
   }
 }
