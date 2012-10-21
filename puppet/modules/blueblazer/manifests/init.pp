@@ -99,9 +99,20 @@ class blueblazer {
     notify  => Service['supervisor'],
   }
 
-  file { '/etc/nginx/sites-enabled/blueblazer.conf':
+  # Set up nginx configs.
+  file { '/etc/nginx/locations/blueblazer.conf':
     content => template('blueblazer/blueblazer.nginx.conf'),
+    require => File['/etc/nginx/locations'],
+    notify  => Service['nginx'],
+  }
+
+  file { ['/etc/nginx/upstreams', '/etc/nginx/locations']:
+    ensure  => 'directory',
     require => Package['nginx'],
+  }
+  file { '/etc/nginx/upstreams/blueblazer.conf':
+    content => template('blueblazer/blueblazer.upstream.nginx.conf'),
+    require => File['/etc/nginx/upstreams'],
     notify  => Service['nginx'],
   }
 }
